@@ -3,11 +3,24 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
+
+var db *gorm.DB
+
+// User model
+type User struct {
+	ID        uint `gorm:"primaryKey"`
+	Name      string
+	Email     string `gorm:"uniqueIndex"`
+	Password  string
+	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP"`
+	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP"`
+}
 
 // Task model
 type Task struct {
@@ -15,8 +28,6 @@ type Task struct {
 	Title string `json:"title"`
 	Done  bool   `json:"done"`
 }
-
-var db *gorm.DB
 
 func initDatabase() {
 	dsn := "host=localhost user=postgres password=password dbname=postgres port=5432 sslmode=disable"
@@ -26,6 +37,7 @@ func initDatabase() {
 		log.Fatal("Failed to connect to database:", err)
 	}
 	// Migrate schema
+	db.AutoMigrate(&User{})
 	db.AutoMigrate(&Task{})
 	fmt.Println("Database connection established & migrated")
 }
