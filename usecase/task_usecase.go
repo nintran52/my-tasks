@@ -1,4 +1,4 @@
-package service
+package usecase
 
 import (
 	"github.com/nintran52/my-tasks/internal/domain/model"

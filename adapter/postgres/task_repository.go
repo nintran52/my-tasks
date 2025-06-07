@@ -1,4 +1,4 @@
-package repository
+package postgres
 
 import (
 	"github.com/nintran52/my-tasks/internal/domain/model"
