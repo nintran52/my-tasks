@@ -29,7 +29,12 @@ func NewTaskPostgresRepo(db *gorm.DB) domain.TaskRepository {
 }
 
 func (r *TaskPostgresRepo) Create(t *domain.Task) error {
-	return r.DB.Create(toModel(t)).Error
+	model := toModel(t)
+	if err := r.DB.Create(model).Error; err != nil {
+		return err
+	}
+	t.ID = model.ID // Update the ID after creation
+	return nil
 }
 
 func (r *TaskPostgresRepo) GetAll() ([]domain.Task, error) {
