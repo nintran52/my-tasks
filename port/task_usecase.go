@@ -1,11 +1,11 @@
 package port
 
-import "github.com/nintran52/my-tasks/internal/domain/model"
+import "github.com/nintran52/my-tasks/domain"
 
 type TaskService interface {
-	CreateTask(task *model.Task) error
-	GetTasks() ([]model.Task, error)
-	GetTask(id uint) (*model.Task, error)
-	UpdateTask(task *model.Task) error
+	CreateTask(task *domain.Task) error
+	GetTasks() ([]domain.Task, error)
+	GetTask(id uint) (*domain.Task, error)
+	UpdateTask(task *domain.Task) error
 	DeleteTask(id uint) error
 }

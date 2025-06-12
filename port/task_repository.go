@@ -1,11 +1,11 @@
 package port
 
-import "github.com/nintran52/my-tasks/internal/domain/model"
+import "github.com/nintran52/my-tasks/domain"
 
 type TaskRepository interface {
-	Create(task *model.Task) error
-	FindAll() ([]model.Task, error)
-	FindByID(id uint) (*model.Task, error)
-	Update(task *model.Task) error
+	Create(task *domain.Task) error
+	FindAll() ([]domain.Task, error)
+	FindByID(id uint) (*domain.Task, error)
+	Update(task *domain.Task) error
 	Delete(id uint) error
 }

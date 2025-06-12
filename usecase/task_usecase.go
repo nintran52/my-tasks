@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"github.com/nintran52/my-tasks/internal/domain/model"
-	"github.com/nintran52/my-tasks/internal/domain/port"
+	"github.com/nintran52/my-tasks/domain"
+	"github.com/nintran52/my-tasks/port"
 )
 
 type taskService struct {
@@ -13,8 +13,18 @@ func NewTaskService(repo port.TaskRepository) port.TaskService {
 	return &taskService{repo: repo}
 }
 
-func (s *taskService) CreateTask(task *model.Task) error    { return s.repo.Create(task) }
-func (s *taskService) GetTasks() ([]model.Task, error)      { return s.repo.FindAll() }
-func (s *taskService) GetTask(id uint) (*model.Task, error) { return s.repo.FindByID(id) }
-func (s *taskService) UpdateTask(task *model.Task) error    { return s.repo.Update(task) }
-func (s *taskService) DeleteTask(id uint) error             { return s.repo.Delete(id) }
+func (s *taskService) CreateTask(task *domain.Task) error {
+	return s.repo.Create(task)
+}
+func (s *taskService) GetTasks() ([]domain.Task, error) {
+	return s.repo.FindAll()
+}
+func (s *taskService) GetTask(id uint) (*domain.Task, error) {
+	return s.repo.FindByID(id)
+}
+func (s *taskService) UpdateTask(task *domain.Task) error {
+	return s.repo.Update(task)
+}
+func (s *taskService) DeleteTask(id uint) error {
+	return s.repo.Delete(id)
+}

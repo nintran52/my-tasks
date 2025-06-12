@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	"github.com/nintran52/my-tasks/internal/domain/model"
+	"github.com/nintran52/my-tasks/domain"
 	"gorm.io/gorm"
 )
 
@@ -13,15 +13,21 @@ func NewTaskRepository(db *gorm.DB) *taskRepository {
 	return &taskRepository{db: db}
 }
 
-func (r *taskRepository) Create(task *model.Task) error { return r.db.Create(task).Error }
-func (r *taskRepository) FindAll() ([]model.Task, error) {
-	var tasks []model.Task
+func (r *taskRepository) Create(task *domain.Task) error {
+	return r.db.Create(task).Error
+}
+func (r *taskRepository) FindAll() ([]domain.Task, error) {
+	var tasks []domain.Task
 	return tasks, r.db.Find(&tasks).Error
 }
-func (r *taskRepository) FindByID(id uint) (*model.Task, error) {
-	var task model.Task
+func (r *taskRepository) FindByID(id uint) (*domain.Task, error) {
+	var task domain.Task
 	result := r.db.First(&task, id)
 	return &task, result.Error
 }
-func (r *taskRepository) Update(task *model.Task) error { return r.db.Save(task).Error }
-func (r *taskRepository) Delete(id uint) error          { return r.db.Delete(&model.Task{}, id).Error }
+func (r *taskRepository) Update(task *domain.Task) error {
+	return r.db.Save(task).Error
+}
+func (r *taskRepository) Delete(id uint) error {
+	return r.db.Delete(&domain.Task{}, id).Error
+}

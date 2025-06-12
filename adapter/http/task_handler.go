@@ -4,8 +4,8 @@ import (
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/nintran52/my-tasks/internal/domain/model"
-	"github.com/nintran52/my-tasks/internal/domain/port"
+	"github.com/nintran52/my-tasks/domain"
+	"github.com/nintran52/my-tasks/port"
 )
 
 type TaskHandler struct {
@@ -25,7 +25,7 @@ func (h *TaskHandler) RegisterRoutes(app *fiber.App) {
 }
 
 func (h *TaskHandler) CreateTask(c *fiber.Ctx) error {
-	task := new(model.Task)
+	task := new(domain.Task)
 	if err := c.BodyParser(task); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid JSON"})
 	}
@@ -54,7 +54,7 @@ func (h *TaskHandler) GetTask(c *fiber.Ctx) error {
 
 func (h *TaskHandler) UpdateTask(c *fiber.Ctx) error {
 	id, _ := strconv.Atoi(c.Params("id"))
-	task := new(model.Task)
+	task := new(domain.Task)
 	if err := c.BodyParser(task); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid JSON"})
 	}
