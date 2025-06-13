@@ -28,6 +28,11 @@ func (h *TaskHandler) Create(c *fiber.Ctx) error {
 	if err := c.BodyParser(&task); err != nil {
 		return common.RespondError(c, fiber.StatusBadRequest, "Invalid JSON")
 	}
+
+	if err := task.Validate(); err != nil {
+		return fiber.NewError(fiber.StatusUnprocessableEntity, err.Error())
+	}
+
 	if err := h.Usecase.CreateTask(&task); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to create task"})
 	}
