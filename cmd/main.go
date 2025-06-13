@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/nintran52/my-tasks/internal/common"
 	"github.com/nintran52/my-tasks/internal/delivery/http"
 	"github.com/nintran52/my-tasks/internal/repository/postgres"
 	"github.com/nintran52/my-tasks/internal/usecase"
@@ -9,7 +11,10 @@ import (
 )
 
 func main() {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		ErrorHandler: common.ErrorHandlerFiber,
+	})
+	app.Use(recover.New())
 	db := database.InitDB()
 
 	taskRepo := postgres.NewTaskPostgresRepo(db)

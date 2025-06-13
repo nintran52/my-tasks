@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/nintran52/my-tasks/internal/common"
 	"github.com/nintran52/my-tasks/internal/domain"
 	"github.com/nintran52/my-tasks/internal/usecase"
 )
@@ -25,7 +26,7 @@ func NewTaskHandler(app *fiber.App, uc *usecase.TaskUsecase) {
 func (h *TaskHandler) Create(c *fiber.Ctx) error {
 	var task domain.Task
 	if err := c.BodyParser(&task); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid JSON"})
+		return common.RespondError(c, fiber.StatusBadRequest, "Invalid JSON")
 	}
 	if err := h.Usecase.CreateTask(&task); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to create task"})
