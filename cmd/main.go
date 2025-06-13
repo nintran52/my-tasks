@@ -2,15 +2,15 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/nintran52/my-tasks/config"
-	"github.com/nintran52/my-tasks/delivery/http"
-	"github.com/nintran52/my-tasks/repository/postgres"
-	"github.com/nintran52/my-tasks/usecase"
+	"github.com/nintran52/my-tasks/internal/delivery/http"
+	"github.com/nintran52/my-tasks/internal/repository/postgres"
+	"github.com/nintran52/my-tasks/internal/usecase"
+	"github.com/nintran52/my-tasks/pkg/database"
 )
 
 func main() {
 	app := fiber.New()
-	db := config.InitDB()
+	db := database.InitDB()
 
 	taskRepo := postgres.NewTaskPostgresRepo(db)
 	taskUC := usecase.NewTaskUsecase(taskRepo)

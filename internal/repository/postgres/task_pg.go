@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	"github.com/nintran52/my-tasks/domain"
+	"github.com/nintran52/my-tasks/internal/domain"
 	"gorm.io/gorm"
 )
 

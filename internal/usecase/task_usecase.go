@@ -1,6 +1,6 @@
 package usecase
 
-import "github.com/nintran52/my-tasks/domain"
+import "github.com/nintran52/my-tasks/internal/domain"
 
 type TaskUsecase struct {
 	Repo domain.TaskRepository

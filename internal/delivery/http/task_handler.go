@@ -4,8 +4,8 @@ import (
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/nintran52/my-tasks/domain"
-	"github.com/nintran52/my-tasks/usecase"
+	"github.com/nintran52/my-tasks/internal/domain"
+	"github.com/nintran52/my-tasks/internal/usecase"
 )
 
 type TaskHandler struct {
