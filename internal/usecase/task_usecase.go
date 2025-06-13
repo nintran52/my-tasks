@@ -14,8 +14,8 @@ func (uc *TaskUsecase) CreateTask(t *domain.Task) error {
 	return uc.Repo.Create(t)
 }
 
-func (uc *TaskUsecase) GetTasks(filters domain.Task) ([]domain.Task, error) {
-	return uc.Repo.GetAll(filters)
+func (uc *TaskUsecase) GetTasks(limit, offset int, filters domain.Task) ([]domain.Task, int64, error) {
+	return uc.Repo.GetAll(limit, offset, filters)
 }
 
 func (uc *TaskUsecase) GetTaskByID(id uint) (*domain.Task, error) {

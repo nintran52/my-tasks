@@ -40,14 +40,29 @@ func (h *TaskHandler) Create(c *fiber.Ctx) error {
 }
 
 func (h *TaskHandler) GetAll(c *fiber.Ctx) error {
-	titleParam := c.Query("title") // ví dụ: shopping
-	doneParam := c.Query("done")   // true hoặc false
+	limitParam := c.Query("limit", "10")
+	offsetParam := c.Query("offset", "0")
+	titleParam := c.Query("title") // example: shopping
+	doneParam := c.Query("done")   // true or false
 
-	tasks, err := h.Usecase.GetTasks(domain.Task{Title: titleParam, Done: doneParam == "true"})
+	limit, _ := strconv.Atoi(limitParam)
+	offset, _ := strconv.Atoi(offsetParam)
+
+	if limit <= 0 || limit > 100 {
+		limit = 10
+	}
+
+	tasks, total, err := h.Usecase.GetTasks(limit, offset, domain.Task{Title: titleParam, Done: doneParam == "true"})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to fetch tasks"})
 	}
-	return c.JSON(tasks)
+	return c.JSON(common.PaginatedResponse{
+		Data:       tasks,
+		Total:      total,
+		Limit:      limit,
+		Offset:     offset,
+		NextOffset: offset + limit,
+	})
 }
 
 func (h *TaskHandler) GetByID(c *fiber.Ctx) error {

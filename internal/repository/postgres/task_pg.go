@@ -37,7 +37,7 @@ func (r *TaskPostgresRepo) Create(t *domain.Task) error {
 	return nil
 }
 
-func (r *TaskPostgresRepo) GetAll(filters domain.Task) ([]domain.Task, error) {
+func (r *TaskPostgresRepo) GetAll(limit, offset int, filters domain.Task) ([]domain.Task, int64, error) {
 	var models []TaskModel
 	query := r.DB.Model(&TaskModel{})
 
@@ -50,14 +50,17 @@ func (r *TaskPostgresRepo) GetAll(filters domain.Task) ([]domain.Task, error) {
 		query = query.Where("done = ?", false)
 	}
 
-	if err := query.Find(&models).Error; err != nil {
-		return nil, err
+	var total int64
+	query.Model(&TaskModel{}).Count(&total)
+
+	if err := query.Offset(offset).Limit(limit).Find(&models).Error; err != nil {
+		return nil, 0, err
 	}
 	var tasks []domain.Task
 	for _, m := range models {
 		tasks = append(tasks, *toEntity(&m))
 	}
-	return tasks, nil
+	return tasks, total, nil
 }
 
 func (r *TaskPostgresRepo) GetByID(id uint) (*domain.Task, error) {
