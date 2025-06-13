@@ -40,7 +40,10 @@ func (h *TaskHandler) Create(c *fiber.Ctx) error {
 }
 
 func (h *TaskHandler) GetAll(c *fiber.Ctx) error {
-	tasks, err := h.Usecase.GetTasks()
+	titleParam := c.Query("title") // ví dụ: shopping
+	doneParam := c.Query("done")   // true hoặc false
+
+	tasks, err := h.Usecase.GetTasks(domain.Task{Title: titleParam, Done: doneParam == "true"})
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to fetch tasks"})
 	}

@@ -37,9 +37,20 @@ func (r *TaskPostgresRepo) Create(t *domain.Task) error {
 	return nil
 }
 
-func (r *TaskPostgresRepo) GetAll() ([]domain.Task, error) {
+func (r *TaskPostgresRepo) GetAll(filters domain.Task) ([]domain.Task, error) {
 	var models []TaskModel
-	if err := r.DB.Find(&models).Error; err != nil {
+	query := r.DB.Model(&TaskModel{})
+
+	if filters.Title != "" {
+		query = query.Where("title LIKE ?", "%"+filters.Title+"%")
+	}
+	if filters.Done {
+		query = query.Where("done = ?", filters.Done)
+	} else if !filters.Done {
+		query = query.Where("done = ?", false)
+	}
+
+	if err := query.Find(&models).Error; err != nil {
 		return nil, err
 	}
 	var tasks []domain.Task
