@@ -15,6 +15,7 @@ func main() {
 		ErrorHandler: common.ErrorHandlerFiber,
 	})
 	app.Use(recover.New())
+	app.Use(common.LoggingFiber)
 	db := database.InitDB()
 
 	taskRepo := postgres.NewTaskPostgresRepo(db)
