@@ -56,7 +56,7 @@ func (r *TaskPostgresRepo) GetAll(limit, offset int, filters domain.Task) ([]dom
 	if err := query.Offset(offset).Limit(limit).Find(&models).Error; err != nil {
 		return nil, 0, err
 	}
-	var tasks []domain.Task
+	tasks := []domain.Task{}
 	for _, m := range models {
 		tasks = append(tasks, *toEntity(&m))
 	}

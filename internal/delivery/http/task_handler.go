@@ -34,9 +34,10 @@ func (h *TaskHandler) Create(c *fiber.Ctx) error {
 	}
 
 	if err := h.Usecase.CreateTask(&task); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to create task"})
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to create task")
 	}
-	return c.Status(fiber.StatusCreated).JSON(task)
+
+	return common.RespondCreated(c, task)
 }
 
 func (h *TaskHandler) GetAll(c *fiber.Ctx) error {
@@ -54,14 +55,14 @@ func (h *TaskHandler) GetAll(c *fiber.Ctx) error {
 
 	tasks, total, err := h.Usecase.GetTasks(limit, offset, domain.Task{Title: titleParam, Done: doneParam == "true"})
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to fetch tasks"})
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to fetch tasks")
 	}
-	return c.JSON(common.PaginatedResponse{
-		Data:       tasks,
-		Total:      total,
-		Limit:      limit,
-		Offset:     offset,
-		NextOffset: offset + limit,
+
+	return common.RespondSuccess(c, common.PaginatedResponse{
+		Data:   tasks,
+		Total:  total,
+		Limit:  limit,
+		Offset: offset,
 	})
 }
 
@@ -69,30 +70,33 @@ func (h *TaskHandler) GetByID(c *fiber.Ctx) error {
 	id, _ := strconv.Atoi(c.Params("id"))
 	task, err := h.Usecase.GetTaskByID(uint(id))
 	if err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Task not found"})
+		return fiber.NewError(fiber.StatusNotFound, "Task not found")
 	}
-	return c.JSON(task)
+
+	return common.RespondSuccess(c, task)
 }
 
 func (h *TaskHandler) Update(c *fiber.Ctx) error {
 	id, _ := strconv.Atoi(c.Params("id"))
 	task, err := h.Usecase.GetTaskByID(uint(id))
 	if err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Task not found"})
+		return fiber.NewError(fiber.StatusNotFound, "Task not found")
 	}
 	if err := c.BodyParser(task); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid JSON"})
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid JSON")
 	}
 	if err := h.Usecase.UpdateTask(task); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to update task"})
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to update task")
 	}
-	return c.JSON(task)
+
+	return common.RespondSuccess(c, task)
 }
 
 func (h *TaskHandler) Delete(c *fiber.Ctx) error {
 	id, _ := strconv.Atoi(c.Params("id"))
 	if err := h.Usecase.DeleteTask(uint(id)); err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Task not found"})
+		return fiber.NewError(fiber.StatusNotFound, "Task not found")
 	}
-	return c.SendStatus(fiber.StatusNoContent)
+
+	return common.RespondNoContent(c)
 }
