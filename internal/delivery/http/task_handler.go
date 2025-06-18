@@ -17,10 +17,10 @@ func NewTaskHandler(app *fiber.App, uc *usecase.TaskUsecase) {
 	handler := &TaskHandler{Usecase: uc}
 
 	app.Post("/tasks", common.AuthMiddleware, handler.Create)
-	app.Get("/tasks", handler.GetAll)
-	app.Get("/tasks/:id", handler.GetByID)
-	app.Put("/tasks/:id", handler.Update)
-	app.Delete("/tasks/:id", handler.Delete)
+	app.Get("/tasks", common.AuthMiddleware, handler.GetAll)
+	app.Get("/tasks/:id", common.AuthMiddleware, handler.GetByID)
+	app.Put("/tasks/:id", common.AuthMiddleware, handler.Update)
+	app.Delete("/tasks/:id", common.AuthMiddleware, handler.Delete)
 }
 
 func (h *TaskHandler) Create(c *fiber.Ctx) error {
@@ -33,6 +33,9 @@ func (h *TaskHandler) Create(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusUnprocessableEntity, err.Error())
 	}
 
+	userID := c.Locals("user_id").(uint)
+	task.CreatedBy = userID
+	task.UpdatedBy = userID
 	if err := h.Usecase.CreateTask(&task); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "Failed to create task")
 	}
@@ -53,7 +56,7 @@ func (h *TaskHandler) GetAll(c *fiber.Ctx) error {
 		limit = 10
 	}
 
-	tasks, total, err := h.Usecase.GetTasks(limit, offset, domain.Task{Title: titleParam, Done: doneParam == "true"})
+	tasks, total, err := h.Usecase.GetTasks(limit, offset, domain.Task{Title: titleParam, Done: doneParam == "true", CreatedBy: c.Locals("user_id").(uint)})
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "Failed to fetch tasks")
 	}
@@ -68,9 +71,15 @@ func (h *TaskHandler) GetAll(c *fiber.Ctx) error {
 
 func (h *TaskHandler) GetByID(c *fiber.Ctx) error {
 	id, _ := strconv.Atoi(c.Params("id"))
+	userID := c.Locals("user_id").(uint)
+
 	task, err := h.Usecase.GetTaskByID(uint(id))
 	if err != nil {
 		return fiber.NewError(fiber.StatusNotFound, "Task not found")
+	}
+
+	if task.CreatedBy != userID {
+		return fiber.NewError(fiber.StatusForbidden, "You do not have permission to access this task")
 	}
 
 	return common.RespondSuccess(c, task)
@@ -78,10 +87,17 @@ func (h *TaskHandler) GetByID(c *fiber.Ctx) error {
 
 func (h *TaskHandler) Update(c *fiber.Ctx) error {
 	id, _ := strconv.Atoi(c.Params("id"))
+	userID := c.Locals("user_id").(uint)
+
 	task, err := h.Usecase.GetTaskByID(uint(id))
 	if err != nil {
 		return fiber.NewError(fiber.StatusNotFound, "Task not found")
 	}
+
+	if task.CreatedBy != userID {
+		return fiber.NewError(fiber.StatusForbidden, "You do not have permission to update this task")
+	}
+
 	if err := c.BodyParser(task); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid JSON")
 	}
@@ -94,6 +110,17 @@ func (h *TaskHandler) Update(c *fiber.Ctx) error {
 
 func (h *TaskHandler) Delete(c *fiber.Ctx) error {
 	id, _ := strconv.Atoi(c.Params("id"))
+	userID := c.Locals("user_id").(uint)
+
+	task, err := h.Usecase.GetTaskByID(uint(id))
+	if err != nil {
+		return fiber.NewError(fiber.StatusNotFound, "Task not found")
+	}
+
+	if task.CreatedBy != userID {
+		return fiber.NewError(fiber.StatusForbidden, "You do not have permission to delete this task")
+	}
+
 	if err := h.Usecase.DeleteTask(uint(id)); err != nil {
 		return fiber.NewError(fiber.StatusNotFound, "Task not found")
 	}

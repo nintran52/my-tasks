@@ -1,22 +1,42 @@
 package postgres
 
 import (
+	"time"
+
 	"github.com/nintran52/my-tasks/internal/domain"
 	"gorm.io/gorm"
 )
 
 type TaskModel struct {
-	ID    uint `gorm:"primaryKey"`
-	Title string
-	Done  bool
+	ID        uint `gorm:"primaryKey"`
+	Title     string
+	Done      bool
+	CreatedAt time.Time `gorm:"autoCreateTime"`
+	CreatedBy uint
+	UpdatedAt time.Time `gorm:"autoUpdateTime"`
+	UpdatedBy uint
 }
 
 func toEntity(m *TaskModel) *domain.Task {
-	return &domain.Task{ID: m.ID, Title: m.Title, Done: m.Done}
+	return &domain.Task{
+		ID:        m.ID,
+		Title:     m.Title,
+		Done:      m.Done,
+		CreatedAt: m.CreatedAt.Format(time.RFC3339),
+		CreatedBy: m.CreatedBy,
+		UpdatedAt: m.UpdatedAt.Format(time.RFC3339),
+		UpdatedBy: m.UpdatedBy,
+	}
 }
 
 func toModel(e *domain.Task) *TaskModel {
-	return &TaskModel{ID: e.ID, Title: e.Title, Done: e.Done}
+	return &TaskModel{
+		ID:        e.ID,
+		Title:     e.Title,
+		Done:      e.Done,
+		CreatedBy: e.CreatedBy,
+		UpdatedBy: e.UpdatedBy,
+	}
 }
 
 type TaskPostgresRepo struct {
@@ -48,6 +68,9 @@ func (r *TaskPostgresRepo) GetAll(limit, offset int, filters domain.Task) ([]dom
 		query = query.Where("done = ?", filters.Done)
 	} else if !filters.Done {
 		query = query.Where("done = ?", false)
+	}
+	if filters.CreatedBy != 0 {
+		query = query.Where("created_by = ?", filters.CreatedBy)
 	}
 
 	var total int64
