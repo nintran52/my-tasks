@@ -18,6 +18,10 @@ func main() {
 	app.Use(common.LoggingFiber)
 	db := database.InitDB()
 
+	userRepo := postgres.NewUserPostgresRepo(db)
+	userUC := usecase.NewUserUsecase(userRepo)
+	http.NewUserHandler(app, userUC)
+
 	taskRepo := postgres.NewTaskPostgresRepo(db)
 	taskUC := usecase.NewTaskUsecase(taskRepo)
 	http.NewTaskHandler(app, taskUC)

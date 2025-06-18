@@ -20,8 +20,10 @@ func RespondError(c *fiber.Ctx, code int, msg string) error {
 	})
 }
 
-func RespondCreated(c *fiber.Ctx, data any) error {
-	return c.Status(http.StatusCreated).JSON(data)
+func RespondCreated(c *fiber.Ctx, id uint) error {
+	return c.Status(http.StatusCreated).JSON(fiber.Map{
+		"id": id,
+	})
 }
 
 func RespondSuccess(c *fiber.Ctx, data any) error {

@@ -37,7 +37,7 @@ func (h *TaskHandler) Create(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "Failed to create task")
 	}
 
-	return common.RespondCreated(c, task)
+	return common.RespondCreated(c, task.ID)
 }
 
 func (h *TaskHandler) GetAll(c *fiber.Ctx) error {
