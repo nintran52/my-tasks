@@ -2,8 +2,10 @@ package usecase
 
 import (
 	"errors"
+	"time"
 
 	"github.com/nintran52/my-tasks/internal/domain"
+	"github.com/nintran52/my-tasks/pkg/token"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -32,4 +34,33 @@ func (uc *UserUsecase) CreateUser(u *domain.User) error {
 	// Save to database
 	u.Password = string(hashedPassword)
 	return uc.Repo.Create(u)
+}
+
+func (uc *UserUsecase) LoginUser(u *domain.User) (string, string, error) {
+	// Validate user
+	existing, err := uc.Repo.GetByEmail(u.Email)
+	if err != nil {
+		return "", "", err
+	}
+	if existing == nil {
+		return "", "", errors.New("invalid email or password")
+	}
+	// Check password
+	if err := bcrypt.CompareHashAndPassword([]byte(existing.Password), []byte(u.Password)); err != nil {
+		return "", "", errors.New("invalid email or password")
+	}
+
+	accessToken, _ := token.GenerateToken(u.ID, 15*time.Minute)
+	refreshToken, _ := token.GenerateToken(u.ID, 7*24*time.Hour)
+
+	return accessToken, refreshToken, nil
+}
+
+func (uc *UserUsecase) RefreshToken(userID uint) (string, error) {
+	accessToken, err := token.GenerateToken(userID, 15*time.Minute)
+	if err != nil {
+		return "", errors.New("failed to generate access token")
+	}
+
+	return accessToken, nil
 }
