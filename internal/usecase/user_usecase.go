@@ -50,8 +50,8 @@ func (uc *UserUsecase) LoginUser(u *domain.User) (string, string, error) {
 		return "", "", errors.New("invalid email or password")
 	}
 
-	accessToken, _ := token.GenerateToken(u.ID, 15*time.Minute)
-	refreshToken, _ := token.GenerateToken(u.ID, 7*24*time.Hour)
+	accessToken, _ := token.GenerateToken(existing.ID, 15*time.Minute)
+	refreshToken, _ := token.GenerateToken(existing.ID, 7*24*time.Hour)
 
 	return accessToken, refreshToken, nil
 }

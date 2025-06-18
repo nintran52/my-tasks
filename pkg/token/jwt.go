@@ -4,10 +4,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
-)
-
-const (
-	secretKey = "your-secret-key" // Replace with your actual secret key
+	"github.com/nintran52/my-tasks/internal/common"
 )
 
 func GenerateToken(userID uint, duration time.Duration) (string, error) {
@@ -16,5 +13,5 @@ func GenerateToken(userID uint, duration time.Duration) (string, error) {
 		"exp":     time.Now().Add(duration).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(secretKey))
+	return token.SignedString([]byte(common.SecretKey))
 }
