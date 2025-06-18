@@ -16,7 +16,7 @@ type TaskHandler struct {
 func NewTaskHandler(app *fiber.App, uc *usecase.TaskUsecase) {
 	handler := &TaskHandler{Usecase: uc}
 
-	app.Post("/tasks", handler.Create)
+	app.Post("/tasks", common.AuthMiddleware, handler.Create)
 	app.Get("/tasks", handler.GetAll)
 	app.Get("/tasks/:id", handler.GetByID)
 	app.Put("/tasks/:id", handler.Update)
