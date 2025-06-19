@@ -1,7 +1,10 @@
 package http
 
 import (
+	"time"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/nintran52/my-tasks/internal/common"
 	"github.com/nintran52/my-tasks/internal/domain"
 	"github.com/nintran52/my-tasks/internal/usecase"
@@ -15,7 +18,13 @@ func NewUserHandler(app *fiber.App, uc *usecase.UserUsecase) {
 	handler := &UserHandler{Usecase: uc}
 
 	app.Post("/v1/users/register", handler.Create)
-	app.Post("/v1/users/login", handler.Login)
+	app.Post("/v1/users/login", limiter.New(limiter.Config{
+		Max:        3,
+		Expiration: 1 * time.Minute,
+		LimitReached: func(c *fiber.Ctx) error {
+			return fiber.NewError(fiber.StatusTooManyRequests, "You sent too many requests. Try again later.")
+		},
+	}), handler.Login)
 	app.Post("v1/users/refresh", common.AuthMiddleware, handler.Refresh)
 }
 
