@@ -31,5 +31,5 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	return common.RespondCreated(c, user.ID)
+	return common.ResponseCreated(c, user.ID)
 }
