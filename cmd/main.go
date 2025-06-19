@@ -7,6 +7,7 @@ import (
 	"github.com/nintran52/my-tasks/internal/delivery/http"
 	"github.com/nintran52/my-tasks/internal/repository/postgres"
 	"github.com/nintran52/my-tasks/internal/usecase"
+	"github.com/nintran52/my-tasks/pkg/cache"
 	"github.com/nintran52/my-tasks/pkg/database"
 )
 
@@ -16,7 +17,9 @@ func main() {
 	})
 	app.Use(recover.New())
 	app.Use(common.LoggingFiber)
+
 	db := database.InitDB()
+	cache.InitRedis()
 
 	userRepo := postgres.NewUserPostgresRepo(db)
 	userUC := usecase.NewUserUsecase(userRepo)
