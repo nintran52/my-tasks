@@ -51,7 +51,7 @@ func (h *UserHandler) Login(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
 
-	return common.RespondSuccess(c, fiber.Map{
+	return common.ResponseSuccess(c, fiber.Map{
 		"access_token":  accessToken,
 		"refresh_token": refreshToken,
 	})
@@ -74,7 +74,7 @@ func (h *UserHandler) Refresh(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
 
-	return common.RespondSuccess(c, fiber.Map{
+	return common.ResponseSuccess(c, fiber.Map{
 		"access_token": newAccessToken,
 	})
 }
