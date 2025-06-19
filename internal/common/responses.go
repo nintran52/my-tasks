@@ -13,26 +13,26 @@ type PaginatedResponse struct {
 	Offset int   `json:"offset"`
 }
 
-func RespondError(c *fiber.Ctx, code int, msg string) error {
+func ResponseError(c *fiber.Ctx, code int, msg string) error {
 	return c.Status(code).JSON(fiber.Map{
 		"error":   http.StatusText(code),
 		"message": msg,
 	})
 }
 
-func RespondCreated(c *fiber.Ctx, id uint) error {
+func ResponseCreated(c *fiber.Ctx, id uint) error {
 	return c.Status(http.StatusCreated).JSON(fiber.Map{
 		"id": id,
 	})
 }
 
-func RespondSuccess(c *fiber.Ctx, data any) error {
+func ResponseSuccess(c *fiber.Ctx, data any) error {
 	if data == nil {
 		return c.SendStatus(http.StatusNoContent)
 	}
 	return c.Status(http.StatusOK).JSON(data)
 }
 
-func RespondNoContent(c *fiber.Ctx) error {
+func ResponseNoContent(c *fiber.Ctx) error {
 	return c.SendStatus(http.StatusNoContent)
 }
