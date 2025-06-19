@@ -26,7 +26,7 @@ func NewTaskHandler(app *fiber.App, uc *usecase.TaskUsecase) {
 func (h *TaskHandler) Create(c *fiber.Ctx) error {
 	var task domain.Task
 	if err := c.BodyParser(&task); err != nil {
-		return common.RespondError(c, fiber.StatusBadRequest, "Invalid JSON")
+		return common.ResponseError(c, fiber.StatusBadRequest, "Invalid JSON")
 	}
 
 	if err := task.Validate(); err != nil {
@@ -40,7 +40,7 @@ func (h *TaskHandler) Create(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "Failed to create task")
 	}
 
-	return common.RespondCreated(c, task.ID)
+	return common.ResponseCreated(c, task.ID)
 }
 
 func (h *TaskHandler) GetAll(c *fiber.Ctx) error {
@@ -61,7 +61,7 @@ func (h *TaskHandler) GetAll(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "Failed to fetch tasks")
 	}
 
-	return common.RespondSuccess(c, common.PaginatedResponse{
+	return common.ResponseSuccess(c, common.PaginatedResponse{
 		Data:   tasks,
 		Total:  total,
 		Limit:  limit,
@@ -82,7 +82,7 @@ func (h *TaskHandler) GetByID(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusForbidden, "You do not have permission to access this task")
 	}
 
-	return common.RespondSuccess(c, task)
+	return common.ResponseSuccess(c, task)
 }
 
 func (h *TaskHandler) Update(c *fiber.Ctx) error {
@@ -105,7 +105,7 @@ func (h *TaskHandler) Update(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "Failed to update task")
 	}
 
-	return common.RespondSuccess(c, task)
+	return common.ResponseSuccess(c, task)
 }
 
 func (h *TaskHandler) Delete(c *fiber.Ctx) error {
@@ -125,5 +125,5 @@ func (h *TaskHandler) Delete(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusNotFound, "Task not found")
 	}
 
-	return common.RespondNoContent(c)
+	return common.ResponseNoContent(c)
 }
