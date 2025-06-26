@@ -1,0 +1,14 @@
+.git
+.gitignore
+README.md
+Dockerfile
+.dockerignore
+.vscode
+.github
+tmp/
+coverage.out
+*.test
+.air.toml
+.golangci.yaml
+.env
+.DS_Store
