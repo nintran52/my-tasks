@@ -44,7 +44,9 @@ type TaskPostgresRepo struct {
 }
 
 func NewTaskPostgresRepo(db *gorm.DB) domain.TaskRepository {
-	db.AutoMigrate(&TaskModel{})
+	if err := db.AutoMigrate(&TaskModel{}); err != nil {
+		panic("failed to auto migrate TaskModel: " + err.Error())
+	}
 	return &TaskPostgresRepo{DB: db}
 }
 

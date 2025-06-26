@@ -32,7 +32,9 @@ type UserPostgresRepo struct {
 }
 
 func NewUserPostgresRepo(db *gorm.DB) domain.UserRepository {
-	db.AutoMigrate(&UserModel{})
+	if err := db.AutoMigrate(&UserModel{}); err != nil {
+		panic("failed to auto migrate UserModel: " + err.Error())
+	}
 	return &UserPostgresRepo{DB: db}
 }
 

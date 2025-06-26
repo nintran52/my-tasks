@@ -29,5 +29,7 @@ func main() {
 	taskUC := usecase.NewTaskUsecase(taskRepo)
 	http.NewTaskHandler(app, taskUC)
 
-	app.Listen(":3000")
+	if err := app.Listen(":3000"); err != nil {
+		panic(err)
+	}
 }
